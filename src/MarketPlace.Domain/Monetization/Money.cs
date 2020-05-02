@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.Monetization
 {
 
     public class Money: Value<Money>

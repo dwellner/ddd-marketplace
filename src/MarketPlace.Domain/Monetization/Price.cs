@@ -1,5 +1,5 @@
 ﻿using System;
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.Monetization
 {
     public class Price : Money
     {

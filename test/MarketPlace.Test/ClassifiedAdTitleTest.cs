@@ -1,4 +1,4 @@
-﻿using MarketPlace.Domain;
+﻿using MarketPlace.Domain.ClassifiedAd;
 using Xunit;
 
 namespace MarketPlace.Test

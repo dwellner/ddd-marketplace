@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.ClassifiedAd
 {
     public class ClassifiedAdTitle : Value<ClassifiedAdTitle>
     {

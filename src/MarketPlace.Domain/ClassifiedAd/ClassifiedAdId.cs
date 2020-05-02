@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.ClassifiedAd
 {
     public class ClassifiedAdId : Value<ClassifiedAdId>
     {
@@ -13,5 +13,7 @@ namespace MarketPlace.Domain
         }
 
         protected override object[] Values => new object[] { Value };
+
+        public static implicit operator Guid(ClassifiedAdId adId) => adId.Value;
     }
 }

@@ -1,4 +1,4 @@
-﻿using MarketPlace.Domain;
+﻿using MarketPlace.Domain.Monetization;
 
 namespace MarketPlace.Test
 {

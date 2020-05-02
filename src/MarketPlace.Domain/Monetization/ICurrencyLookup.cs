@@ -1,4 +1,4 @@
-﻿namespace MarketPlace.Domain
+﻿namespace MarketPlace.Domain.Monetization
 {
     public interface ICurrencyLookup
     {
