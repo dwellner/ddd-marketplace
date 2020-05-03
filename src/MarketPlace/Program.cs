@@ -1,26 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace MarketPlace
 {
-    public class Program
+    public static class Program
     {
+        static string CurrentDirectory { get; set; }
+
+        static Program() => CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var configuration = BuildConfiguration(args);
+            ConfigureWebHost(configuration).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IWebHostBuilder ConfigureWebHost(IConfiguration configuration) =>
+            new WebHostBuilder()
+            .UseStartup<Startup>()
+            .UseConfiguration(configuration)
+            .ConfigureServices(services => services.AddSingleton(configuration))
+            .UseContentRoot(CurrentDirectory)
+            .UseKestrel();
+
+
+        private static IConfiguration BuildConfiguration(string[] args) =>
+            new ConfigurationBuilder().SetBasePath(CurrentDirectory).Build();
     }
 }
