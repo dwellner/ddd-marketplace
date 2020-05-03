@@ -5,15 +5,18 @@ using MarketPlace.Contracts;
 using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
+using MarketPlace.EntityStore;
 
 namespace MarketPlace.Service
 {
     public class ClassifiedAdsService : ICommandHandler
     {
+        private readonly IEntityStore<ClassifiedAd> entityStore;
         private readonly ICurrencyLookup currencyLookup;
 
-        public ClassifiedAdsService(ICurrencyLookup currencyLookup)
+        public ClassifiedAdsService(IEntityStore<ClassifiedAd> entityStore, ICurrencyLookup currencyLookup)
         {
+            this.entityStore = entityStore;
             this.currencyLookup = currencyLookup;
         }
 
@@ -36,36 +39,38 @@ namespace MarketPlace.Service
 
         private async Task Handle(ClassifiedAds.V1.Create command)
         {
-            // TODO: check Id, ownerId somehow
             var ad = new ClassifiedAd(new ClassifiedAdId(command.Id), new UserId(command.OwnerId));
-            // TODO: persist entity somehow
+            await entityStore.Create(ad);
         }
 
         private async Task Handle(ClassifiedAds.V1.SetTitle command)
         {
-            var ad = GetById(new ClassifiedAdId(command.Id));
+            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
             ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(command.Title));
+            await entityStore.Save(ad);
         }
 
         private async Task Handle(ClassifiedAds.V1.UpdateText command)
         {
-            var ad = GetById(new ClassifiedAdId(command.Id));
+            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
             ad.UpdateText(ClassifiedAdText.FromString(command.Text));
+            await entityStore.Save(ad);
         }
 
         private async Task Handle(ClassifiedAds.V1.UpdatePrice command)
         {
-            var ad = GetById(new ClassifiedAdId(command.Id));
+            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
             ad.UpdatePrice(Price.FromDecimal(command.Amount, command.CurrencyCode, currencyLookup));
+            await entityStore.Save(ad);
         }
 
         private async Task Handle(ClassifiedAds.V1.RequestToPublish command)
         {
-            var ad = GetById(new ClassifiedAdId(command.Id));
+            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
             ad.RequestToPublish();
+            await entityStore.Save(ad);
         }
 
-        private ClassifiedAd GetById(ClassifiedAdId id) => new ClassifiedAd(new ClassifiedAdId(id), new UserId(id));
     }
 }
 
