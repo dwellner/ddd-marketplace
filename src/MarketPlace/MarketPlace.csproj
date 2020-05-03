@@ -13,8 +13,14 @@
   <ItemGroup>
     <Folder Include="Api\" />
     <Folder Include="Contracts\" />
+    <Folder Include="Service\" />
+    <Folder Include="EntityStore\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MarketPlace.Domain\MarketPlace.Domain.csproj" />
   </ItemGroup>
 </Project>

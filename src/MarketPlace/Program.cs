@@ -1,5 +1,7 @@
 using System.IO;
 using System.Reflection;
+using MarketPlace.Contracts;
+using MarketPlace.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +26,11 @@ namespace MarketPlace
             new WebHostBuilder()
             .UseStartup<Startup>()
             .UseConfiguration(configuration)
-            .ConfigureServices(services => services.AddSingleton(configuration))
+            .ConfigureServices(services => services
+                .AddSingleton(configuration)
+                .AddSingleton <ICommandHandler>(c =>
+                new RetryingCommandHandler(
+                    new ClassifiedAdsService())))
             .UseContentRoot(CurrentDirectory)
             .UseKestrel();
 
