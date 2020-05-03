@@ -27,47 +27,32 @@ namespace MarketPlace.Service
 
             var task = command switch
             {
-                ClassifiedAds.V1.Create c => Handle(c),
-                ClassifiedAds.V1.SetTitle c => Handle(c),
-                ClassifiedAds.V1.UpdateText c => Handle(c),
-                ClassifiedAds.V1.UpdatePrice c => Handle(c),
-                ClassifiedAds.V1.RequestToPublish c => Handle(c),
+                ClassifiedAds.V1.Create c => HandleCreate(() =>
+                    new ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId))),
+                ClassifiedAds.V1.SetTitle c => HandleUpdate(c.Id, ad =>
+                    ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(c.Title))),
+                ClassifiedAds.V1.UpdateText c => HandleUpdate(c.Id, ad =>
+                    ad.UpdateText(ClassifiedAdText.FromString(c.Text))),
+                ClassifiedAds.V1.UpdatePrice c => HandleUpdate(c.Id, ad =>
+                    ad.UpdatePrice(Price.FromDecimal(c.Amount, c.CurrencyCode, currencyLookup))),
+                ClassifiedAds.V1.RequestToPublish c => HandleUpdate(c.Id, ad =>
+                    ad.RequestToPublish()),
                 _ => HandleUnknownCommand(command)
             };
             await task;
         }
 
-        private async Task Handle(ClassifiedAds.V1.Create command)
+        private async Task HandleCreate(Func<ClassifiedAd> creator)
         {
-            var ad = new ClassifiedAd(new ClassifiedAdId(command.Id), new UserId(command.OwnerId));
+            var ad = creator();
             await entityStore.Create(ad);
         }
 
-        private async Task Handle(ClassifiedAds.V1.SetTitle command)
+        private async Task HandleUpdate(Guid id, Action<ClassifiedAd> action)
         {
-            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
-            ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(command.Title));
-            await entityStore.Save(ad);
-        }
-
-        private async Task Handle(ClassifiedAds.V1.UpdateText command)
-        {
-            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
-            ad.UpdateText(ClassifiedAdText.FromString(command.Text));
-            await entityStore.Save(ad);
-        }
-
-        private async Task Handle(ClassifiedAds.V1.UpdatePrice command)
-        {
-            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
-            ad.UpdatePrice(Price.FromDecimal(command.Amount, command.CurrencyCode, currencyLookup));
-            await entityStore.Save(ad);
-        }
-
-        private async Task Handle(ClassifiedAds.V1.RequestToPublish command)
-        {
-            var ad = await entityStore.GetById(new ClassifiedAdId(command.Id));
-            ad.RequestToPublish();
+            var ad = await entityStore.GetById(new ClassifiedAdId(id));
+            if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");
+            action(ad);
             await entityStore.Save(ad);
         }
 
