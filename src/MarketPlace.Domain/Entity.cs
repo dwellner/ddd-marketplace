@@ -8,10 +8,22 @@ namespace MarketPlace.Domain
     {
         readonly List<object> events = new List<object>();
 
-        protected void Raise(object @event) => events.Add(@event);
-
         protected Entity() { }
 
+        protected abstract void When(object @event);
+
+        protected abstract void EnsureValidState();
+
+        protected void Apply(object @event)
+        {
+            When(@event);
+            EnsureValidState();
+            events.Add(@event);
+        }
+
         public IEnumerable<object> GetChanges() => events.AsEnumerable();
-    }
+
+
+
+    }   
 }

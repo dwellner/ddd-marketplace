@@ -7,13 +7,14 @@ namespace MarketPlace.Domain.ClassifiedAd
     {
         protected override object[] Values => new object[] { };
 
-        private ClassifiedAdText(string text)
-        {
-            if (string.IsNullOrEmpty(text)) throw new ArgumentException("text must not be empty", nameof(text));
+        internal ClassifiedAdText(string text) {
             Text = text;
         }
 
-        public static ClassifiedAdText FromString([NotNull] string text) => new ClassifiedAdText(text);
+        public static ClassifiedAdText FromString([NotNull] string text) {
+            if (string.IsNullOrEmpty(text)) throw new ArgumentException("text must not be empty", nameof(text));
+            return new ClassifiedAdText(text);
+        }
 
         public string Text { get; }
     }

@@ -7,6 +7,8 @@ namespace MarketPlace.Domain.Monetization
             if (value < 0) throw new ArgumentException("Price cannot be negative", nameof(value));
         }
 
+        internal Price(decimal amount, string currencyCode) : base(amount, currencyCode) { }
+
         public static new Price FromDecimal(decimal amount, string currencyCode,ICurrencyLookup currencyLookup) =>
             new Price(amount, currencyCode,currencyLookup);
 

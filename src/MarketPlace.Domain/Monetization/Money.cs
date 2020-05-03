@@ -7,12 +7,12 @@ namespace MarketPlace.Domain.Monetization
     {
         public const string defaultCurrency = "EUR";
 
-        protected override object[] Values => new object[] { Amount, Currency };
+        protected override object[] Values => new object[] { Amount, CurrencyCode };
 
-        private Money(decimal amount, Currency currency)
+        internal  Money(decimal amount, string currencyCode)
         {
             Amount = amount;
-            Currency = currency;
+            CurrencyCode = currencyCode;
         }
 
         protected Money(decimal amount, string currencyCode, ICurrencyLookup currencyLookup) {
@@ -24,29 +24,29 @@ namespace MarketPlace.Domain.Monetization
             if (Math.Round(amount, currency.DecimalPlaces) != amount) throw new ArgumentException($"amount must have no more than {currency.DecimalPlaces} decimals for currency {currency.CurrencyCode}", nameof(amount));
 
             Amount = amount;
-            Currency = currency;
+            CurrencyCode = currency.CurrencyCode;
         }
 
         public static Money FromDecimal(decimal amount, string currencyCode, ICurrencyLookup currencyLookup)
             => new Money(amount, currencyCode, currencyLookup);
 
         public decimal Amount { get; }
-        public Currency Currency { get; }
+        public string CurrencyCode { get; }
 
         public Money Add(Money other)
         {
-            if (Currency.CurrencyCode != other.Currency.CurrencyCode) throw new CurrenyMismatchException("Cannot add Money of different currencies");
-            return new Money(Amount + other.Amount, Currency);
+            if (CurrencyCode != other.CurrencyCode) throw new CurrenyMismatchException("Cannot add Money of different currencies");
+            return new Money(Amount + other.Amount, CurrencyCode);
         }
         public Money Subtract(Money other)
         {
-            if (Currency.CurrencyCode != other.Currency.CurrencyCode) throw new CurrenyMismatchException("Cannot subtract Money of different currencies");
-            return new Money(Amount - other.Amount, Currency);
+            if (CurrencyCode != other.CurrencyCode) throw new CurrenyMismatchException("Cannot subtract Money of different currencies");
+            return new Money(Amount - other.Amount, CurrencyCode);
         }
 
         public static Money operator + (Money left, Money right) => left.Add(right);
         public static Money operator - (Money left, Money right) => left.Subtract(right);
-        public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
+        public override string ToString() => $"{CurrencyCode} {Amount}";
     }
 
     public class CurrenyMismatchException : Exception
