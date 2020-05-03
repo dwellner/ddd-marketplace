@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
 
-namespace MarketPlace
+namespace MarketPlace.CommandHandler
 {
     public class RetryableException : Exception
     {

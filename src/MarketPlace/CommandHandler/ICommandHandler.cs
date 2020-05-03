@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace MarketPlace
+namespace MarketPlace.CommandHandler
 {
     public interface ICommandHandler
     {

@@ -1,6 +1,8 @@
 using System.IO;
 using System.Reflection;
+using MarketPlace.CommandHandler;
 using MarketPlace.Contracts;
+using MarketPlace.Domain.Monetization;
 using MarketPlace.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -28,9 +30,10 @@ namespace MarketPlace
             .UseConfiguration(configuration)
             .ConfigureServices(services => services
                 .AddSingleton(configuration)
-                .AddSingleton <ICommandHandler>(c =>
+                .AddSingleton<ICurrencyLookup, CurrencyLookup>()
+                .AddSingleton<ICommandHandler>(c =>
                 new RetryingCommandHandler(
-                    new ClassifiedAdsService())))
+                    new ClassifiedAdsService(c.GetService<ICurrencyLookup>()))))
             .UseContentRoot(CurrentDirectory)
             .UseKestrel();
 

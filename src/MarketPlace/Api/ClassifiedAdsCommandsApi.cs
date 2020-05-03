@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MarketPlace.CommandHandler;
 using MarketPlace.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,5 +21,37 @@ namespace MarketPlace.Api
             await commandHandler.Handle(request);
             return Ok();
         }
+
+        [Route("/title")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
+        {
+            await commandHandler.Handle(request);
+            return Ok();
+        }
+
+        [Route("/text")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
+        {
+            await commandHandler.Handle(request);
+            return Ok();
+        }
+
+        [Route("/price")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
+        {
+            await commandHandler.Handle(request);
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
+        {
+            await commandHandler.Handle(request);
+            return Ok();
+        }
+
     }
 }

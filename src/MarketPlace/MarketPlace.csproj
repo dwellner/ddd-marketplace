@@ -15,6 +15,7 @@
     <Folder Include="Contracts\" />
     <Folder Include="Service\" />
     <Folder Include="EntityStore\" />
+    <Folder Include="CommandHandler\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Polly" Version="7.2.1" />
