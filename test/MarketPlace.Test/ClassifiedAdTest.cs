@@ -13,6 +13,7 @@ namespace MarketPlace.Test
         public void Request_publishing_should_succeed_when_ad_is_complete()
         {
             var ad = new ClassifiedAd(new ClassifiedAdId(Guid.NewGuid()), new UserId(Guid.NewGuid()));
+            ad.AddPicture(new PictureId(Guid.NewGuid()), new PictureSize(800, 600), new Uri("http://example.com"));
             ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml("Fine car!"));
             ad.UpdateText(ClassifiedAdText.FromString("1981 Talbot. Mint condition, no rust"));
             ad.UpdatePrice(Price.FromDecimal(1500m, "EUR", new FakeCurrencyLookup()));

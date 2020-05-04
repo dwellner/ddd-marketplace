@@ -39,7 +39,7 @@ namespace MarketPlace.Domain.ClassifiedAd
                 Height = size.Height,
                 Width = size.Width,
                 Url = location.ToString(),
-                Order = Pictures.Max(p => p.Order) + 1
+                Order = Pictures.Any() ? Pictures.Max(p => p.Order) + 1 : 1
             });
 
         public void ResizePicture(PictureId pictureId, PictureSize newSize)

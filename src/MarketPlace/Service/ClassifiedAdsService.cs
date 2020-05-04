@@ -11,12 +11,12 @@ namespace MarketPlace.Service
 {
     public class ClassifiedAdsService : ICommandHandler
     {
-        private readonly IEntityStore<ClassifiedAd> entityStore;
+        private readonly IClassifiedAdRepository repository;
         private readonly ICurrencyLookup currencyLookup;
 
-        public ClassifiedAdsService(IEntityStore<ClassifiedAd> entityStore, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsService(IClassifiedAdRepository repository, ICurrencyLookup currencyLookup)
         {
-            this.entityStore = entityStore;
+            this.repository = repository;
             this.currencyLookup = currencyLookup;
         }
 
@@ -45,15 +45,17 @@ namespace MarketPlace.Service
         private async Task HandleCreate(Func<ClassifiedAd> creator)
         {
             var ad = creator();
-            await entityStore.Create(ad);
+            var exists = await repository.exists(ad.Id);
+            if (exists) throw new InvalidOperationException("ClassifiedAd with same id already exists");
+            await repository.Add(ad);
         }
 
         private async Task HandleUpdate(Guid id, Action<ClassifiedAd> action)
         {
-            var ad = await entityStore.GetById(new ClassifiedAdId(id));
+            var ad = await repository.Load(new ClassifiedAdId(id));
             if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");
             action(ad);
-            await entityStore.Save(ad);
+            // TODO: repository save?
         }
 
     }

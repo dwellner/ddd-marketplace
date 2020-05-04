@@ -33,11 +33,10 @@ namespace MarketPlace
             .ConfigureServices(services => services
                 .AddSingleton(configuration)
                 .AddSingleton<ICurrencyLookup, CurrencyLookup>()
-                .AddSingleton<IEntityStore<ClassifiedAd>, EntityStore.EntityStore>()
-
+                .AddSingleton<IClassifiedAdRepository, ClassifiedAdRepository>()
                 .AddSingleton<ICommandHandler>(c =>
                 new RetryingCommandHandler(
-                    new ClassifiedAdsService(c.GetService< IEntityStore<ClassifiedAd>>(), c.GetService<ICurrencyLookup>()))))
+                    new ClassifiedAdsService(c.GetService<IClassifiedAdRepository>(), c.GetService<ICurrencyLookup>()))))
             .UseContentRoot(CurrentDirectory)
             .UseKestrel();
 

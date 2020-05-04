@@ -14,7 +14,7 @@
     <Folder Include="Api\" />
     <Folder Include="Contracts\" />
     <Folder Include="Service\" />
-    <Folder Include="EntityStore\" />
+    <Folder Include="Infrastructure\" />
     <Folder Include="CommandHandler\" />
   </ItemGroup>
   <ItemGroup>
