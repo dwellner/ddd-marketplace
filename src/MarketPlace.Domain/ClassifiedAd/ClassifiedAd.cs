@@ -42,6 +42,14 @@ namespace MarketPlace.Domain.ClassifiedAd
                 Order = Pictures.Max(p => p.Order) + 1
             });
 
+        public void ResizePicture(PictureId pictureId, PictureSize newSize)
+        {
+            var picture = Pictures.FirstOrDefault(p => p.Id == pictureId);
+            if (picture == null) throw new ArgumentException("Invaliid picture id", nameof(pictureId));
+            picture.Resize(newSize);
+        }
+            
+
         protected override void When(object @event)
         {
             switch (@event)
@@ -71,12 +79,17 @@ namespace MarketPlace.Domain.ClassifiedAd
             }
         }
 
+        Picture FirstPicture => Pictures.OrderBy(p => p.Order).FirstOrDefault();
+
         protected override void EnsureValidState()
         {
+            var hasTitleTextAndPrice = Title != null && Text != null && Price != null;
+            var hasBeenApproved = ApprovedById != null;
+
             var valid = Id != null && OwnerId != null &&  State switch 
             {
-                ClassifiedAdState.PendingReview => Title != null && Text != null && Price != null,
-                ClassifiedAdState.Active => Title != null && Text != null && Price != null && ApprovedById != null,
+                ClassifiedAdState.PendingReview => hasTitleTextAndPrice && FirstPicture.HasValidSize(),
+                ClassifiedAdState.Active => hasTitleTextAndPrice && FirstPicture.HasValidSize() && hasBeenApproved,
                 _ => true
             };
 
