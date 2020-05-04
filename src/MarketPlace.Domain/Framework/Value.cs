@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.Framework
 {
     public abstract class Value<TType> : IEquatable<TType> where TType : Value<TType>
     {

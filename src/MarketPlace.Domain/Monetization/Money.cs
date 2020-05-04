@@ -1,4 +1,5 @@
 ﻿using System;
+using MarketPlace.Domain.Framework;
 
 namespace MarketPlace.Domain.Monetization
 {

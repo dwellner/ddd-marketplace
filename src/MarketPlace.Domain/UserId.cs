@@ -1,17 +1,10 @@
 ﻿using System;
+using MarketPlace.Domain.Framework;
 
 namespace MarketPlace.Domain
 {
-    public class UserId : Value<UserId>
+    public class UserId : IdValue<UserId, Guid>
     {
-        public Guid Value { get; }
-
-        public UserId(Guid value)
-        {
-            if (value == default) throw new ArgumentException("Value must be specified", nameof(value));
-            Value = value;
-        }
-
-        protected override object[] Values => new object[] { Value };
+        public UserId(Guid value): base(value) { }
     }
 }

@@ -1,19 +1,10 @@
 ﻿using System;
+using MarketPlace.Domain.Framework;
 
 namespace MarketPlace.Domain.ClassifiedAd
 {
-    public class ClassifiedAdId : Value<ClassifiedAdId>
+    public class ClassifiedAdId : IdValue<ClassifiedAdId,Guid>
     {
-        public Guid Value { get; }
-
-        public ClassifiedAdId(Guid value)
-        {
-            if (value == default) throw new ArgumentException("Value must be specified", nameof(value));
-            Value = value;
-        }
-
-        protected override object[] Values => new object[] { Value };
-
-        public static implicit operator Guid(ClassifiedAdId adId) => adId.Value;
+        public ClassifiedAdId(Guid value) : base(value) { }
     }
 }

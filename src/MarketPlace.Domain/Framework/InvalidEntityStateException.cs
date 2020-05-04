@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarketPlace.Domain
+namespace MarketPlace.Domain.Framework
 {
     [Serializable]
     public class InvalidEntityStateException : Exception

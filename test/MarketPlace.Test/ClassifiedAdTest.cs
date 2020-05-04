@@ -1,6 +1,7 @@
 ﻿using System;
 using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
+using MarketPlace.Domain.Framework;
 using MarketPlace.Domain.Monetization;
 using Xunit;
 

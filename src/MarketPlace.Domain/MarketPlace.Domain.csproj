@@ -19,5 +19,6 @@
   <ItemGroup>
     <Folder Include="Monetization\" />
     <Folder Include="ClassifiedAd\" />
+    <Folder Include="Framework\" />
   </ItemGroup>
 </Project>

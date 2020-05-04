@@ -1,4 +1,6 @@
-﻿namespace MarketPlace.Domain.Monetization
+﻿using MarketPlace.Domain.Framework;
+
+namespace MarketPlace.Domain.Monetization
 {
     public class Currency : Value<Currency>
     {

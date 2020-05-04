@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using MarketPlace.Domain.Framework;
 
 namespace MarketPlace.Domain.ClassifiedAd
 {

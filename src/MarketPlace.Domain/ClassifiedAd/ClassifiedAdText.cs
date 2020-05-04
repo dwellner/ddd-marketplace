@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-    
+using MarketPlace.Domain.Framework;
+
 namespace MarketPlace.Domain.ClassifiedAd
 {
     public class ClassifiedAdText : Value<ClassifiedAdTitle>

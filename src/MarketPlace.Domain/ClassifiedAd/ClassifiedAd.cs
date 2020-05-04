@@ -1,10 +1,14 @@
-﻿using MarketPlace.Domain.Monetization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MarketPlace.Domain.Framework;
+using MarketPlace.Domain.Monetization;
 
 namespace MarketPlace.Domain.ClassifiedAd
 {
-    public class ClassifiedAd: Entity
+    public class ClassifiedAd: AggregateRoot<ClassifiedAdId>
     {
-        public ClassifiedAdId Id { get; private set; }
+        List<Picture> Pictures { get; } = new List<Picture>();
         public UserId OwnerId { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
@@ -27,6 +31,17 @@ namespace MarketPlace.Domain.ClassifiedAd
         public void RequestToPublish() => 
             Apply(new Events.ClassifiedAdSentForReview { Id = Id });
 
+        public void AddPicture(PictureId pictureId, PictureSize size, Uri location) =>
+            Apply(new Events.PictureAddedToClassifiedAd
+            {
+                ClassifiedAdId = Id,
+                PictureId = pictureId.Value,
+                Height = size.Height,
+                Width = size.Width,
+                Url = location.ToString(),
+                Order = Pictures.Max(p => p.Order) + 1
+            });
+
         protected override void When(object @event)
         {
             switch (@event)
@@ -47,6 +62,11 @@ namespace MarketPlace.Domain.ClassifiedAd
                     break;
                 case Events.ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.AdTitle);
+                    break;
+                case Events.PictureAddedToClassifiedAd e:
+                    var picture = new Picture(Apply);
+                    ApplyToEntity(picture, @event);
+                    Pictures.Add(picture);
                     break;
             }
         }
