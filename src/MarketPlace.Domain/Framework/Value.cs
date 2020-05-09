@@ -12,14 +12,14 @@ namespace MarketPlace.Domain.Framework
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return Enumerable.SequenceEqual(Values,other.Values);
+            return Enumerable.SequenceEqual(GetValues(),other.GetValues());
         }
 
-        protected abstract object[] Values { get; }
+        protected abstract object[] GetValues();
 
         public override bool Equals(object obj) => obj is TType && Equals(obj as TType);
 
-        public override int GetHashCode() => Values.Select(p => p != null ? p.GetHashCode() : 17).Aggregate((a,b)=> a * b);
+        public override int GetHashCode() => GetValues().Select(p => p != null ? p.GetHashCode() : 17).Aggregate((a,b)=> a * b);
 
         public static bool operator ==(Value<TType> left, Value<TType> right) => Equals(left, right);
         public static bool operator !=(Value<TType> left, Value<TType> right) => !Equals(left, right);

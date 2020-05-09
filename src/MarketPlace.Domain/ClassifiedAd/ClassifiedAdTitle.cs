@@ -9,7 +9,9 @@ namespace MarketPlace.Domain.ClassifiedAd
     {
         const int MAX_LENGTH = 100;
 
-        protected override object[] Values => new object[] { };
+        protected override object[] GetValues() => new object[] { };
+
+        protected ClassifiedAdTitle() { }
 
         internal ClassifiedAdTitle(string text)
         {
@@ -24,6 +26,6 @@ namespace MarketPlace.Domain.ClassifiedAd
             return new ClassifiedAdTitle(Regex.Replace(text, "<.*?>", string.Empty));
         }
 
-        public string Text { get; }
+        public string Text { get; private set; }
     }
 }

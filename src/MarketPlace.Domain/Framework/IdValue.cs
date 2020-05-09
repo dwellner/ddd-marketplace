@@ -4,7 +4,7 @@ namespace MarketPlace.Domain.Framework
 {
     public abstract class IdValue<TValue,TId> : Value<TValue> where TValue : Value<TValue>
     {
-        public TId Value { get; }
+        public TId Value { get; private set; }
 
         public IdValue(TId value)
         {
@@ -12,7 +12,7 @@ namespace MarketPlace.Domain.Framework
             Value = value;
         }
 
-        protected override object[] Values => new object[] { Value };
+        protected override object[] GetValues() => new object[] { Value };
 
         public static implicit operator TId (IdValue<TValue,TId> idValue) => idValue.Value;
     }

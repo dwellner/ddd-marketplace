@@ -47,6 +47,7 @@ namespace MarketPlace.Api
         }
 
         [HttpPut]
+        [Route("/request-publish")]
         public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
         {
             await commandHandler.Handle(request);

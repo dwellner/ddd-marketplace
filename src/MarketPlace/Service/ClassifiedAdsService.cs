@@ -5,18 +5,19 @@ using MarketPlace.Contracts;
 using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
-using MarketPlace.EntityStore;
 
 namespace MarketPlace.Service
 {
     public class ClassifiedAdsService : ICommandHandler
     {
         private readonly IClassifiedAdRepository repository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ICurrencyLookup currencyLookup;
 
-        public ClassifiedAdsService(IClassifiedAdRepository repository, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsService(IClassifiedAdRepository repository, IUnitOfWork unitOfWork, ICurrencyLookup currencyLookup)
         {
             this.repository = repository;
+            this.unitOfWork = unitOfWork;
             this.currencyLookup = currencyLookup;
         }
 
@@ -48,6 +49,7 @@ namespace MarketPlace.Service
             var exists = await repository.exists(ad.Id);
             if (exists) throw new InvalidOperationException("ClassifiedAd with same id already exists");
             await repository.Add(ad);
+            await unitOfWork.Commit();
         }
 
         private async Task HandleUpdate(Guid id, Action<ClassifiedAd> action)
@@ -55,7 +57,7 @@ namespace MarketPlace.Service
             var ad = await repository.Load(new ClassifiedAdId(id));
             if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");
             action(ad);
-            // TODO: repository save?
+            await unitOfWork.Commit();
         }
 
     }

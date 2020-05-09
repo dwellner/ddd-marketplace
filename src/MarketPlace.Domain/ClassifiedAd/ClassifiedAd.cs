@@ -16,6 +16,8 @@ namespace MarketPlace.Domain.ClassifiedAd
         public Price Price { get; private set; }
         public UserId ApprovedById { get; private set; }
 
+        protected ClassifiedAd() { }
+
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId) => 
             Apply(new Events.ClassifiedAdCreated { Id = id, OwnerId = ownerId.Value });
 

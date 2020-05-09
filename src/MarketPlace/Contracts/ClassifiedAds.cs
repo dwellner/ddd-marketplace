@@ -33,7 +33,6 @@ namespace MarketPlace.Contracts
             public class RequestToPublish
             {
                 public Guid Id { get; set; }
-                public Guid OwnerId { get; set; }
             }
 
         }

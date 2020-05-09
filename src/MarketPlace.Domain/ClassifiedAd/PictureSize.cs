@@ -8,7 +8,7 @@ namespace MarketPlace.Domain.ClassifiedAd
         public int Width { get; internal set; }
         public int Height { get; internal set; }
 
-        protected override object[] Values => new object[] { Width, Height };
+        protected override object[] GetValues() => new object[] { Width, Height };
 
         public PictureSize(int width, int height)
         {

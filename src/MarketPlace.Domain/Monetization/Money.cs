@@ -8,7 +8,9 @@ namespace MarketPlace.Domain.Monetization
     {
         public const string defaultCurrency = "EUR";
 
-        protected override object[] Values => new object[] { Amount, CurrencyCode };
+        protected override object[] GetValues() => new object[] { Amount, CurrencyCode };
+
+        protected Money() { }
 
         internal  Money(decimal amount, string currencyCode)
         {

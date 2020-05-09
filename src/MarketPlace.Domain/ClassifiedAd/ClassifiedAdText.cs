@@ -6,7 +6,9 @@ namespace MarketPlace.Domain.ClassifiedAd
 {
     public class ClassifiedAdText : Value<ClassifiedAdTitle>
     {
-        protected override object[] Values => new object[] { };
+        protected override object[] GetValues() => new object[] { };
+
+        protected ClassifiedAdText() { }
 
         internal ClassifiedAdText(string text) {
             Text = text;
@@ -17,6 +19,6 @@ namespace MarketPlace.Domain.ClassifiedAd
             return new ClassifiedAdText(text);
         }
 
-        public string Text { get; }
+        public string Text { get; private set; }
     }
 }

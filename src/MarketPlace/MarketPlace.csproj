@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Polly" Version="7.2.1" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.102" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
   </ItemGroup>
   <ItemGroup>
