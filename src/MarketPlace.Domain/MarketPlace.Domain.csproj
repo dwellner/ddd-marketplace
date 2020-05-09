@@ -20,5 +20,6 @@
     <Folder Include="Monetization\" />
     <Folder Include="ClassifiedAd\" />
     <Folder Include="Framework\" />
+    <Folder Include="UserProfile\" />
   </ItemGroup>
 </Project>

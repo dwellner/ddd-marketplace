@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MarketPlace.CommandHandler;
-using MarketPlace.Contracts;
 using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
+using MarketPlace.Service;
 
-namespace MarketPlace.Service
+namespace MarketPlace.ClassifiedAd
 {
     public class ClassifiedAdsService : ICommandHandler
     {
@@ -28,22 +28,22 @@ namespace MarketPlace.Service
 
             var task = command switch
             {
-                ClassifiedAds.V1.Create c => HandleCreate(() =>
-                    new ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId))),
-                ClassifiedAds.V1.SetTitle c => HandleUpdate(c.Id, ad =>
+                Contracts.V1.Create c => HandleCreate(() =>
+                    new Domain.ClassifiedAd.ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId))),
+                Contracts.V1.SetTitle c => HandleUpdate(c.Id, ad =>
                     ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(c.Title))),
-                ClassifiedAds.V1.UpdateText c => HandleUpdate(c.Id, ad =>
+                Contracts.V1.UpdateText c => HandleUpdate(c.Id, ad =>
                     ad.UpdateText(ClassifiedAdText.FromString(c.Text))),
-                ClassifiedAds.V1.UpdatePrice c => HandleUpdate(c.Id, ad =>
+                Contracts.V1.UpdatePrice c => HandleUpdate(c.Id, ad =>
                     ad.UpdatePrice(Price.FromDecimal(c.Amount, c.CurrencyCode, currencyLookup))),
-                ClassifiedAds.V1.RequestToPublish c => HandleUpdate(c.Id, ad =>
+                Contracts.V1.RequestToPublish c => HandleUpdate(c.Id, ad =>
                     ad.RequestToPublish()),
                 _ => HandleUnknownCommand(command)
             };
             await task;
         }
 
-        private async Task HandleCreate(Func<ClassifiedAd> creator)
+        private async Task HandleCreate(Func<Domain.ClassifiedAd.ClassifiedAd> creator)
         {
             var ad = creator();
             var exists = await repository.exists(ad.Id);
@@ -52,7 +52,7 @@ namespace MarketPlace.Service
             await unitOfWork.Commit();
         }
 
-        private async Task HandleUpdate(Guid id, Action<ClassifiedAd> action)
+        private async Task HandleUpdate(Guid id, Action<Domain.ClassifiedAd.ClassifiedAd> action)
         {
             var ad = await repository.Load(new ClassifiedAdId(id));
             if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");

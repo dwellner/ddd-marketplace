@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using MarketPlace.CommandHandler;
-using MarketPlace.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MarketPlace.Api
+namespace MarketPlace.ClassifiedAd
 {
     [Route("/ad")]
     public class ClassifiedAdsCommandsApi : Controller
@@ -16,7 +15,7 @@ namespace MarketPlace.Api
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ClassifiedAds.V1.Create request)
+        public async Task<IActionResult> Post(Contracts.V1.Create request)
         {
             await commandHandler.Handle(request);
             return Ok();
@@ -24,7 +23,7 @@ namespace MarketPlace.Api
 
         [Route("/title")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
+        public async Task<IActionResult> Put(Contracts.V1.SetTitle request)
         {
             await commandHandler.Handle(request);
             return Ok();
@@ -32,7 +31,7 @@ namespace MarketPlace.Api
 
         [Route("/text")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
+        public async Task<IActionResult> Put(Contracts.V1.UpdateText request)
         {
             await commandHandler.Handle(request);
             return Ok();
@@ -40,7 +39,7 @@ namespace MarketPlace.Api
 
         [Route("/price")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
+        public async Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
         {
             await commandHandler.Handle(request);
             return Ok();
@@ -48,7 +47,7 @@ namespace MarketPlace.Api
 
         [HttpPut]
         [Route("/request-publish")]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
+        public async Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
         {
             await commandHandler.Handle(request);
             return Ok();

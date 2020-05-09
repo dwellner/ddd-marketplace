@@ -2,7 +2,7 @@
 using MarketPlace.Domain.Monetization;
 using Xunit;
 
-namespace MarketPlace.Test
+namespace MarketPlace.Test.Domain.Monetization
 {
 
     public class MoneyTest

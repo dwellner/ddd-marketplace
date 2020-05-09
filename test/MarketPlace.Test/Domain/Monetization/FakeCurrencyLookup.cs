@@ -1,6 +1,6 @@
 ﻿using MarketPlace.Domain.Monetization;
 
-namespace MarketPlace.Test
+namespace MarketPlace.Test.Domain.Monetization
 {
     class FakeCurrencyLookup : ICurrencyLookup
     {

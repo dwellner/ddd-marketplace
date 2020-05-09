@@ -1,7 +1,7 @@
 ﻿using MarketPlace.Domain.ClassifiedAd;
 using Xunit;
 
-namespace MarketPlace.Test
+namespace MarketPlace.Test.Domain.ClassifiedAds
 {
     public class ClassifiedAdTitleTest
     {

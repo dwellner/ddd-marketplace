@@ -11,11 +11,9 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Api\" />
-    <Folder Include="Contracts\" />
     <Folder Include="Service\" />
-    <Folder Include="Infrastructure\" />
     <Folder Include="CommandHandler\" />
+    <Folder Include="ClassifiedAd\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Polly" Version="7.2.1" />
@@ -24,5 +22,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MarketPlace.Domain\MarketPlace.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Infrastructure\ClassifiedAdRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClassifiedAd\ClassifiedAdsCommandsApi.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
 </Project>

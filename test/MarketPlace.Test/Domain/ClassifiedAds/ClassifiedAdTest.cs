@@ -3,9 +3,10 @@ using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Framework;
 using MarketPlace.Domain.Monetization;
+using MarketPlace.Test.Domain.Monetization;
 using Xunit;
 
-namespace MarketPlace.Test
+namespace MarketPlace.Test.Domain.ClassifiedAds
 {
     public class ClassifiedAdTest
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-namespace MarketPlace.Contracts
+namespace MarketPlace.ClassifiedAd
 {
-    public static class ClassifiedAds
+    public static class Contracts
     {
         public static class V1
         {

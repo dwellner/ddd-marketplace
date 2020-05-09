@@ -1,3 +1,4 @@
+using MarketPlace.ClassifiedAd;
 using MarketPlace.CommandHandler;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
@@ -40,7 +41,7 @@ namespace MarketPlace
             services.AddSingleton<ICurrencyLookup, CurrencyLookup>();
             services.AddScoped(c => store.OpenAsyncSession());
             services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
-            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRavenDbRepository>();
+            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
             services.AddScoped<ICommandHandler>(c =>
                 new RetryingCommandHandler(
                     new ClassifiedAdsService(

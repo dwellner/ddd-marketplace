@@ -23,4 +23,10 @@
     <ProjectReference Include="..\..\src\MarketPlace.Domain\MarketPlace.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\" />
+    <Folder Include="Domain\UserProfiles\" />
+    <Folder Include="Domain\ClassifiedAds\" />
+    <Folder Include="Domain\Monetization\" />
+  </ItemGroup>
 </Project>
