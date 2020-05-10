@@ -8,6 +8,6 @@ namespace MarketPlace.Domain.ClassifiedAd
 
         Task Add(ClassifiedAd add);
 
-        Task<bool> exists(ClassifiedAdId id);
+        Task<bool> Exists(ClassifiedAdId id);
     }
 }

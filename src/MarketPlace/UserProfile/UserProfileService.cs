@@ -47,7 +47,7 @@ namespace MarketPlace.UserProfile
         private async Task HandleCreate(Func<Domain.UserProfile.UserProfile> creator)
         {
             var ad = creator();
-            var exists = await repository.exists(ad.Id);
+            var exists = await repository.Exists(ad.Id);
             if (exists) throw new InvalidOperationException("ClassifiedAd with same id already exists");
             await repository.Add(ad);
             await unitOfWork.Commit();

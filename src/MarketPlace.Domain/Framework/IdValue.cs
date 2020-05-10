@@ -4,6 +4,8 @@ namespace MarketPlace.Domain.Framework
 {
     public abstract class IdValue<TValue,TId> : Value<TValue> where TValue : Value<TValue>
     {
+        protected IdValue() { }
+
         public TId Value { get; private set; }
 
         public IdValue(TId value)

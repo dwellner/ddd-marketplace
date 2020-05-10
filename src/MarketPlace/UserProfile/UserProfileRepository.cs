@@ -1,19 +1,13 @@
-﻿using System.Threading.Tasks;
-using MarketPlace.Domain.UserProfile;
+﻿using MarketPlace.Domain.UserProfile;
+using MarketPlace.Service;
 using Raven.Client.Documents.Session;
 
 namespace MarketPlace.UserProfile
 {
-    public class UserProfileRepository: IUserProfileRepository
+    public class UserProfileRepository: RavenDbEntityRepository<Domain.UserProfile.UserProfile, UserProfileId>, IUserProfileRepository
     {
-        readonly IAsyncDocumentSession session;
+        protected override string EntityType => "UserProfile";
 
-        public UserProfileRepository(IAsyncDocumentSession session) => this.session = session;
-
-        public Task<Domain.UserProfile.UserProfile> Load(UserProfileId id) => session.LoadAsync<Domain.UserProfile.UserProfile>(EntityId(id));
-        public Task Add(Domain.UserProfile.UserProfile profile) => session.StoreAsync(profile, EntityId(profile.Id));
-        public Task<bool> exists(UserProfileId id) => session.Advanced.ExistsAsync(EntityId(id));
-
-        private string EntityId(UserProfileId id) => $"UserProfile/{id.Value}";
+        public UserProfileRepository(IAsyncDocumentSession session) : base(session) { }
     }
 }

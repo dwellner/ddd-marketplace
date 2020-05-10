@@ -8,6 +8,6 @@ namespace MarketPlace.Domain.UserProfile
 
         Task Add(UserProfile add);
 
-        Task<bool> exists(UserProfileId id);
+        Task<bool> Exists(UserProfileId id);
     }
 }
