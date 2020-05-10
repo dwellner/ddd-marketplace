@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MarketPlace.CommandHandler;
 using MarketPlace.Domain;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
@@ -8,40 +7,47 @@ using MarketPlace.Service;
 
 namespace MarketPlace.ClassifiedAd
 {
-    public class ClassifiedAdsService : ICommandHandler
+    public class ClassifiedAdsService
     {
         private readonly IClassifiedAdRepository repository;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IFailoverPolicy failoverPolicy;
         private readonly ICurrencyLookup currencyLookup;
 
-        public ClassifiedAdsService(IClassifiedAdRepository repository, IUnitOfWork unitOfWork, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsService(IClassifiedAdRepository repository, IUnitOfWork unitOfWork,
+            IFailoverPolicyProvider failoverPolicyProvider, ICurrencyLookup currencyLookup)
         {
             this.repository = repository;
             this.unitOfWork = unitOfWork;
+            this.failoverPolicy = failoverPolicyProvider.CommandRetryPolicy;
             this.currencyLookup = currencyLookup;
         }
 
-        public async Task Handle(object command)
-        {
-            Task HandleUnknownCommand(object command) =>
-                throw new ArgumentException($"Unsupported command type: {command.GetType().Name}");
-
-            var task = command switch
-            {
-                Contracts.V1.Create c => HandleCreate(() =>
-                    new Domain.ClassifiedAd.ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId))),
-                Contracts.V1.SetTitle c => HandleUpdate(c.Id, ad =>
-                    ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(c.Title))),
-                Contracts.V1.UpdateText c => HandleUpdate(c.Id, ad =>
-                    ad.UpdateText(ClassifiedAdText.FromString(c.Text))),
-                Contracts.V1.UpdatePrice c => HandleUpdate(c.Id, ad =>
-                    ad.UpdatePrice(Price.FromDecimal(c.Amount, c.CurrencyCode, currencyLookup))),
-                Contracts.V1.RequestToPublish c => HandleUpdate(c.Id, ad =>
-                    ad.RequestToPublish()),
-                _ => HandleUnknownCommand(command)
-            };
-            await task;
-        }
+        public async Task Handle(object command) =>
+            await failoverPolicy.ExecuteAsync(async () => {
+                switch (command)
+                {
+                    case Contracts.V1.Create c:
+                        await HandleCreate(() =>
+                            new Domain.ClassifiedAd.ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId)));
+                        break;
+                    case Contracts.V1.SetTitle c:
+                        await HandleUpdate(c.Id, ad =>
+                        ad.SetTitle(ClassifiedAdTitle.FromTextOrHtml(c.Title)));
+                        break;
+                    case Contracts.V1.UpdateText c:
+                        await HandleUpdate(c.Id, ad => ad.UpdateText(ClassifiedAdText.FromString(c.Text)));
+                        break;
+                    case Contracts.V1.UpdatePrice c:
+                        await HandleUpdate(c.Id, ad =>
+                            ad.UpdatePrice(Price.FromDecimal(c.Amount, c.CurrencyCode, currencyLookup)));
+                        break;
+                    case Contracts.V1.RequestToPublish c:
+                        await HandleUpdate(c.Id, ad => ad.RequestToPublish());
+                        break;
+                    default: throw new ArgumentException($"Unsupported command type: {command.GetType().Name}");
+                };
+            });
 
         private async Task HandleCreate(Func<Domain.ClassifiedAd.ClassifiedAd> creator)
         {

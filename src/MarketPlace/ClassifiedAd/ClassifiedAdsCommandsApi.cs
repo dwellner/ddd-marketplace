@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using MarketPlace.CommandHandler;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketPlace.ClassifiedAd
@@ -7,17 +6,17 @@ namespace MarketPlace.ClassifiedAd
     [Route("/ad")]
     public class ClassifiedAdsCommandsApi : Controller
     {
-        private readonly ICommandHandler commandHandler;
+        private readonly ClassifiedAdsService appService;
 
-        public ClassifiedAdsCommandsApi(ICommandHandler commandHandler)
+        public ClassifiedAdsCommandsApi(ClassifiedAdsService appService)
         {
-            this.commandHandler = commandHandler;
+            this.appService = appService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(Contracts.V1.Create request)
         {
-            await commandHandler.Handle(request);
+            await appService.Handle(request);
             return Ok();
         }
 
@@ -25,7 +24,7 @@ namespace MarketPlace.ClassifiedAd
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.SetTitle request)
         {
-            await commandHandler.Handle(request);
+            await appService.Handle(request);
             return Ok();
         }
 
@@ -33,7 +32,7 @@ namespace MarketPlace.ClassifiedAd
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.UpdateText request)
         {
-            await commandHandler.Handle(request);
+            await appService.Handle(request);
             return Ok();
         }
 
@@ -41,7 +40,7 @@ namespace MarketPlace.ClassifiedAd
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
         {
-            await commandHandler.Handle(request);
+            await appService.Handle(request);
             return Ok();
         }
 
@@ -49,7 +48,7 @@ namespace MarketPlace.ClassifiedAd
         [Route("/request-publish")]
         public async Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
         {
-            await commandHandler.Handle(request);
+            await appService.Handle(request);
             return Ok();
         }
 

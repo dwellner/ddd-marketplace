@@ -1,5 +1,4 @@
 using MarketPlace.ClassifiedAd;
-using MarketPlace.CommandHandler;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
 using MarketPlace.Infrastructure;
@@ -24,8 +23,6 @@ namespace MarketPlace
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             var store = new DocumentStore {
@@ -39,16 +36,11 @@ namespace MarketPlace
             store.Initialize();
 
             services.AddSingleton<ICurrencyLookup, CurrencyLookup>();
+            services.AddSingleton<IFailoverPolicyProvider, FailoverPolicyFactory>();
             services.AddScoped(c => store.OpenAsyncSession());
             services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
             services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
-            services.AddScoped<ICommandHandler>(c =>
-                new RetryingCommandHandler(
-                    new ClassifiedAdsService(
-                        c.GetService<IClassifiedAdRepository>(),
-                        c.GetService<IUnitOfWork>(),
-                        c.GetService<ICurrencyLookup>())));
-
+            services.AddScoped<ClassifiedAdsService>();
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {

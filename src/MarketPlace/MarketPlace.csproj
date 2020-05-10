@@ -12,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Service\" />
-    <Folder Include="CommandHandler\" />
     <Folder Include="ClassifiedAd\" />
   </ItemGroup>
   <ItemGroup>
@@ -22,11 +21,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MarketPlace.Domain\MarketPlace.Domain.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Infrastructure\ClassifiedAdRepository.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ClassifiedAd\ClassifiedAdsCommandsApi.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
 </Project>
