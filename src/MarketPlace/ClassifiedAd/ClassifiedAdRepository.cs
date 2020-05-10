@@ -2,7 +2,7 @@
 using MarketPlace.Domain.ClassifiedAd;
 using Raven.Client.Documents.Session;
 
-namespace MarketPlace.Infrastructure
+namespace MarketPlace.ClassifiedAd
 {
     public class ClassifiedAdRepository: IClassifiedAdRepository
     {

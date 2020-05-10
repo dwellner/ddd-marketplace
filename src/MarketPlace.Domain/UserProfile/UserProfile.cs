@@ -34,11 +34,11 @@ namespace MarketPlace.Domain.UserProfile
                 DisplayName = newName.Value
             });
          
-        public void ProfilePhotoUploaded(string photoUrl) =>
+        public void ProfilePhotoUploaded(Uri photoUrl) =>
             Apply(new Events.UserProfilePhotoUploaded
             {
                 UserId = Id,
-                PhotoUrl= photoUrl
+                PhotoUrl= photoUrl.ToString()
             });
 
 

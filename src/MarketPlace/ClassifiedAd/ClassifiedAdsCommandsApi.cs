@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketPlace.ClassifiedAd
 {
-    [Route("/ad")]
+    [Route("v1/ad")]
     public class ClassifiedAdsCommandsApi : Controller
     {
         private readonly ClassifiedAdsService appService;
@@ -20,7 +20,7 @@ namespace MarketPlace.ClassifiedAd
             return Ok();
         }
 
-        [Route("/title")]
+        [Route("title")]
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.SetTitle request)
         {
@@ -28,7 +28,7 @@ namespace MarketPlace.ClassifiedAd
             return Ok();
         }
 
-        [Route("/text")]
+        [Route("text")]
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.UpdateText request)
         {
@@ -36,7 +36,7 @@ namespace MarketPlace.ClassifiedAd
             return Ok();
         }
 
-        [Route("/price")]
+        [Route("price")]
         [HttpPut]
         public async Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
         {
@@ -45,7 +45,7 @@ namespace MarketPlace.ClassifiedAd
         }
 
         [HttpPut]
-        [Route("/request-publish")]
+        [Route("request-publish")]
         public async Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
         {
             await appService.Handle(request);

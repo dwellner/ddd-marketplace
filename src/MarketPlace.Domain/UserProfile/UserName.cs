@@ -16,6 +16,8 @@ namespace MarketPlace.Domain.UserProfile
 
         protected override object[] GetValues() => new object[] { Value };
 
+        protected UserFullName() { }
+
         internal UserFullName(string value) => Value = value;
     }
 
