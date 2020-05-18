@@ -5,17 +5,14 @@ using MarketPlace.Service;
 
 namespace MarketPlace.UserProfile
 {
-    public class UserProfileService
+    public class UserProfileService: IApplicationService
     {
-        private readonly IUserProfileRepository repository;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IAggregateStore store;
         private readonly IFailoverPolicy failoverPolicy;
 
-        public UserProfileService(IUserProfileRepository repository, IUnitOfWork unitOfWork,
-            IFailoverPolicyProvider failoverPolicyProvider)
+        public UserProfileService(IAggregateStore store, IFailoverPolicyProvider failoverPolicyProvider)
         {
-            this.repository = repository;
-            this.unitOfWork = unitOfWork;
+            this.store = store;
             failoverPolicy = failoverPolicyProvider.CommandRetryPolicy;
         }
 
@@ -23,10 +20,8 @@ namespace MarketPlace.UserProfile
             await failoverPolicy.ExecuteAsync(async () => {
                 switch (command)
                 {
-                    case Contracts.V1.Create c:
-                        await HandleCreate(() =>
-                            new Domain.UserProfile.UserProfile(new UserProfileId(c.Id),
-                            UserFullName.FromString(c.FullName), UserDisplayName.FromString(c.DisplayName)));
+                    case Contracts.V1.Create cmd:
+                        await HandleCreate(cmd);
                         break;
                     case Contracts.V1.UpdateFullName c:
                         await HandleUpdate(c.Id, profile =>
@@ -44,23 +39,21 @@ namespace MarketPlace.UserProfile
                 };
             });
 
-        private async Task HandleCreate(Func<Domain.UserProfile.UserProfile> creator)
+        private async Task HandleCreate(Contracts.V1.Create cmd)
         {
-            var ad = creator();
-            var exists = await repository.Exists(ad.Id);
-            if (exists) throw new InvalidOperationException("ClassifiedAd with same id already exists");
-            await repository.Add(ad);
-            await unitOfWork.Commit();
+            var id = new UserProfileId(cmd.Id);
+            var exists = await store.Exists<Domain.UserProfile.UserProfile, UserProfileId>(id);
+            if (exists) throw new InvalidOperationException("UserProfileId with same id already exists");
+
+            var userProfile = new Domain.UserProfile.UserProfile(id,
+                UserFullName.FromString(cmd.FullName), UserDisplayName.FromString(cmd.DisplayName));
+
+            await store.Save<Domain.UserProfile.UserProfile, UserProfileId>(userProfile);
         }
 
-        private async Task HandleUpdate(Guid id, Action<Domain.UserProfile.UserProfile> action)
-        {
-            var ad = await repository.Load(new UserProfileId(id));
-            if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");
-            action(ad);
-            await unitOfWork.Commit();
-        }
-
+        private async Task HandleUpdate(Guid guid, Action<Domain.UserProfile.UserProfile> operation) =>
+            await this.HandleUpdate(store, new UserProfileId(guid), operation);
     }
+
 }
 

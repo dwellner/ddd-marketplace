@@ -30,6 +30,7 @@ namespace MarketPlace
 
 
         private static IConfiguration BuildConfiguration(string[] args) =>
-            new ConfigurationBuilder().SetBasePath(CurrentDirectory).Build();
+            new ConfigurationBuilder().SetBasePath(CurrentDirectory)
+            .AddJsonFile("appsettings.json", false).Build();
     }
 }

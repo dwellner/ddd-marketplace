@@ -1,4 +1,5 @@
 using System;
+using EventStore.ClientAPI;
 using MarketPlace.ClassifiedAd;
 using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
@@ -27,6 +28,7 @@ namespace MarketPlace
 
         public void ConfigureServices(IServiceCollection services)
         {
+            /* RavenDB 
             var store = new DocumentStore {
                 Urls = new [] { "http://localhost:8080"},
                 Database = "Marketplace",
@@ -36,10 +38,21 @@ namespace MarketPlace
                 }
             };
             store.Initialize();
+            */
+            var esConnection = EventStoreConnection.Create(
+                Configuration["eventStore:connectionString"],
+                ConnectionSettings.Create().KeepReconnecting(),
+                Environment.ApplicationName);
+
+            var store = new EventStoreAggregateStore(esConnection);
+
+            services.AddSingleton(esConnection);
+            services.AddSingleton<IAggregateStore>(store);
+            services.AddSingleton<IHostedService, HostedService>();
 
             services.AddSingleton<ICurrencyLookup, CurrencyLookup>();
             services.AddSingleton<IFailoverPolicyProvider, FailoverPolicyFactory>();
-            services.AddScoped(c => store.OpenAsyncSession());
+            // RavenDB services.AddScoped(c => store.OpenAsyncSession());
             services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
             services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
             services.AddScoped<ClassifiedAdsService>();

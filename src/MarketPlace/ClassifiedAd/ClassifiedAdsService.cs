@@ -5,21 +5,19 @@ using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
 using MarketPlace.Service;
 
+
 namespace MarketPlace.ClassifiedAd
 {
-    public class ClassifiedAdsService
+    public class ClassifiedAdsService: IApplicationService
     {
-        private readonly IClassifiedAdRepository repository;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IAggregateStore store;
         private readonly IFailoverPolicy failoverPolicy;
         private readonly ICurrencyLookup currencyLookup;
 
-        public ClassifiedAdsService(IClassifiedAdRepository repository, IUnitOfWork unitOfWork,
-            IFailoverPolicyProvider failoverPolicyProvider, ICurrencyLookup currencyLookup)
+        public ClassifiedAdsService(IAggregateStore store, IFailoverPolicyProvider failoverPolicyProvider, ICurrencyLookup currencyLookup)
         {
-            this.repository = repository;
-            this.unitOfWork = unitOfWork;
-            this.failoverPolicy = failoverPolicyProvider.CommandRetryPolicy;
+            this.store = store;
+            failoverPolicy = failoverPolicyProvider.CommandRetryPolicy;
             this.currencyLookup = currencyLookup;
         }
 
@@ -27,9 +25,8 @@ namespace MarketPlace.ClassifiedAd
             await failoverPolicy.ExecuteAsync(async () => {
                 switch (command)
                 {
-                    case Contracts.V1.Create c:
-                        await HandleCreate(() =>
-                            new Domain.ClassifiedAd.ClassifiedAd(new ClassifiedAdId(c.Id), new UserId(c.OwnerId)));
+                    case Contracts.V1.Create cmd:
+                        await HandleCreate(cmd);
                         break;
                     case Contracts.V1.SetTitle c:
                         await HandleUpdate(c.Id, ad =>
@@ -49,23 +46,18 @@ namespace MarketPlace.ClassifiedAd
                 };
             });
 
-        private async Task HandleCreate(Func<Domain.ClassifiedAd.ClassifiedAd> creator)
+        private async Task HandleCreate(Contracts.V1.Create cmd)
         {
-            var ad = creator();
-            var exists = await repository.Exists(ad.Id);
+            var id = new ClassifiedAdId(cmd.Id);
+            var exists = await store.Exists<Domain.ClassifiedAd.ClassifiedAd, ClassifiedAdId>(id);
             if (exists) throw new InvalidOperationException("ClassifiedAd with same id already exists");
-            await repository.Add(ad);
-            await unitOfWork.Commit();
+
+            var ad = new Domain.ClassifiedAd.ClassifiedAd(id, new UserId(cmd.OwnerId));
+            await store.Save<Domain.ClassifiedAd.ClassifiedAd, ClassifiedAdId>(ad);
         }
 
-        private async Task HandleUpdate(Guid id, Action<Domain.ClassifiedAd.ClassifiedAd> action)
-        {
-            var ad = await repository.Load(new ClassifiedAdId(id));
-            if (ad == null) throw new ArgumentException($"Invalid ad id: {id}");
-            action(ad);
-            await unitOfWork.Commit();
-        }
-
+        private async Task HandleUpdate(Guid guid, Action<Domain.ClassifiedAd.ClassifiedAd> operation) =>
+            await this.HandleUpdate(store, new ClassifiedAdId(guid), operation);
     }
 }
 

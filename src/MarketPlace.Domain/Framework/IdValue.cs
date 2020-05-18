@@ -15,6 +15,7 @@ namespace MarketPlace.Domain.Framework
         }
 
         protected override object[] GetValues() => new object[] { Value };
+        public override string ToString() => Value.ToString();
 
         public static implicit operator TId (IdValue<TValue,TId> idValue) => idValue.Value;
     }

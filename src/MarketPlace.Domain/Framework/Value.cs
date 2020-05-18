@@ -23,6 +23,5 @@ namespace MarketPlace.Domain.Framework
 
         public static bool operator ==(Value<TType> left, Value<TType> right) => Equals(left, right);
         public static bool operator !=(Value<TType> left, Value<TType> right) => !Equals(left, right);
-
     }
 }
