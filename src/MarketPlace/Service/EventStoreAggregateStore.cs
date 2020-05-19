@@ -11,12 +11,6 @@ namespace MarketPlace.Service
 {
     public class EventStoreAggregateStore : IAggregateStore
     {
-        private class EventMetaData
-        {
-            public string ClrType { get; set; }
-        }
-
-
         private static string GetStreamName<T, TId>(TId aggregateId) =>
             $"{typeof(T).Name}-{aggregateId}";
         private static string GetStreamName<T, TId>(T aggregate)
@@ -70,17 +64,7 @@ namespace MarketPlace.Service
             apply(page.Events);
             if (!page.IsEndOfStream) await ApplyAll(streamName, apply, start + 1024);
         }
-
-        private object ResolveEvent(ResolvedEvent e) => JsonConvert.DeserializeObject(
-            GetEventJsonData(e),
-            Type.GetType(GetMetaData(e).ClrType));
         
-
-        private EventMetaData GetMetaData(ResolvedEvent e) => JsonConvert.DeserializeObject<EventMetaData>(Encoding.UTF8.GetString(e.Event.Metadata));
-        private string GetEventJsonData(ResolvedEvent e) => Encoding.UTF8.GetString(e.Event.Data);
-
-
-
         public async Task<T> Load<T, TId>(TId aggregateId) where T : AggregateRoot<TId> where TId : Value<TId>
         {
             if (aggregateId == null) throw new ArgumentNullException(nameof(aggregateId));
@@ -88,7 +72,7 @@ namespace MarketPlace.Service
 
 
             await ApplyAll(GetStreamName<T, TId>(aggregateId), events =>
-                aggregate.Load(events.Select(e => ResolveEvent(e))));
+                aggregate.Load(events.Select(e => e.Deserialize())));
             return aggregate;
         }
     }

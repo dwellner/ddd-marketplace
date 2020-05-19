@@ -41,7 +41,7 @@ namespace MarketPlace.Test.Domain.UserProfiles
         public void ShouldUpdatePhotoUrlUponProfilePhotoUploaded()
         {
             var userProfile = new UserProfile(new UserProfileId(Guid.NewGuid()), UserFullName.FromString("Mike Seller"), UserDisplayName.FromString("mike88"));
-            userProfile.ProfilePhotoUploaded("http://example.com/photo.jpg");
+            userProfile.ProfilePhotoUploaded(new Uri("http://example.com/photo.jpg"));
             Assert.Equal("http://example.com/photo.jpg", userProfile.PhotoUrl.ToString());
         }
 

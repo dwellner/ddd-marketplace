@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Raven.Client.Documents.Session;
 using Serilog;
 using static MarketPlace.ClassifiedAd.QueryModels;
+using static MarketPlace.Projections.ReadModels;
 
 namespace MarketPlace.ClassifiedAd
 {
     [Route("v1/add")]
     public class ClassifiedAdsQueryController
     {
-        private readonly IAsyncDocumentSession session;
+        private readonly IEnumerable<ClassifiedAdDetails> items;
 
-        public ClassifiedAdsQueryController(IAsyncDocumentSession session) => this.session = session;
+        public ClassifiedAdsQueryController(IEnumerable<ClassifiedAdDetails> items) => this.items = items;
 
         [HttpGet]
         [Route("list")]
@@ -30,11 +31,11 @@ namespace MarketPlace.ClassifiedAd
             await Get(s => s.Query(request));
 
 
-        private async Task<IActionResult> Get<TResult>(Func<IAsyncDocumentSession,Task<TResult>> query)
+        private async Task<IActionResult> Get<TResult>(Func<IEnumerable<ClassifiedAdDetails>, Task<TResult>> query)
         {
             try
             {
-                var result = await query(session);
+                var result = await query(items);
                 if (result == null) return new NotFoundResult();
                 return new OkObjectResult(result);
             } catch (Exception e)

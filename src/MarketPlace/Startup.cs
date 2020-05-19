@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using EventStore.ClientAPI;
 using MarketPlace.ClassifiedAd;
-using MarketPlace.Domain.ClassifiedAd;
 using MarketPlace.Domain.Monetization;
-using MarketPlace.Domain.UserProfile;
+using MarketPlace.Projections;
 using MarketPlace.Service;
 using MarketPlace.UserProfile;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Raven.Client.Documents;
+using static MarketPlace.Projections.ReadModels;
 
 namespace MarketPlace
 {
@@ -28,17 +29,6 @@ namespace MarketPlace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            /* RavenDB 
-            var store = new DocumentStore {
-                Urls = new [] { "http://localhost:8080"},
-                Database = "Marketplace",
-                Conventions =
-                {
-                    FindIdentityProperty = m => m.Name == "_databaseId" 
-                }
-            };
-            store.Initialize();
-            */
             var esConnection = EventStoreConnection.Create(
                 Configuration["eventStore:connectionString"],
                 ConnectionSettings.Create().KeepReconnecting(),
@@ -48,17 +38,20 @@ namespace MarketPlace
 
             services.AddSingleton(esConnection);
             services.AddSingleton<IAggregateStore>(store);
-            services.AddSingleton<IHostedService, HostedService>();
 
             services.AddSingleton<ICurrencyLookup, CurrencyLookup>();
             services.AddSingleton<IFailoverPolicyProvider, FailoverPolicyFactory>();
-            // RavenDB services.AddScoped(c => store.OpenAsyncSession());
-            services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
-            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
             services.AddScoped<ClassifiedAdsService>();
-
-            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.AddScoped<UserProfileService>();
+
+            var ads = new List<ClassifiedAdDetails>();
+            var users = new List<UserDetails>();
+            services.AddSingleton<IEnumerable<ClassifiedAdDetails>>(ads);
+            var subscription = new ProjectionsManager(esConnection, new List<IProjection> {
+                new ClassifiedAdDetailsProjection(ads, id => users.FirstOrDefault(u => u.Id == id)?.Displayname),
+                new UserDetailsProjection(users)
+            });
+            services.AddSingleton<IHostedService>(new EventStoreService(esConnection, subscription));
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddSwaggerGen(c =>

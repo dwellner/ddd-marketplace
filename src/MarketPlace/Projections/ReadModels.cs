@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MarketPlace.ClassifiedAd
+namespace MarketPlace.Projections
 {
     public static class ReadModels
     {
@@ -12,7 +12,8 @@ namespace MarketPlace.ClassifiedAd
             public decimal Price { get; set; }
             public string CurrencyCode { get; set; }
             public string Description { get; set; }
-            public string SellersDisplayName { get; set; }
+            public Guid SellerId { get; set; }
+            public string SellerDisplayName { get; set; }
             public string[] PhotoUrls { get; set; }
         }
 
@@ -24,6 +25,14 @@ namespace MarketPlace.ClassifiedAd
             public string CurrencyCode { get; set; }
             public string PhotoUrl { get; set; }
         }
+
+        public class UserDetails
+        {
+            public Guid Id { get; set; }
+            public string Displayname { get; set; }
+            public string Fullname { get; set; }
+        }
+
     }
 
 }
